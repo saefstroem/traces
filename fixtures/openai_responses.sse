@@ -1,0 +1,63 @@
+event: response.created
+data: {"type":"response.created","response":{"id":"resp_synthetic","object":"response","status":"in_progress","model":"synthetic-model","output":[]},"sequence_number":0}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":0,"item":{"id":"rs_1","type":"reasoning","summary":[]},"sequence_number":1}
+
+event: response.reasoning_summary_part.added
+data: {"type":"response.reasoning_summary_part.added","item_id":"rs_1","output_index":0,"summary_index":0,"part":{"type":"summary_text","text":""},"sequence_number":2}
+
+event: response.reasoning_summary_text.delta
+data: {"type":"response.reasoning_summary_text.delta","item_id":"rs_1","output_index":0,"summary_index":0,"delta":"**Listing files** ","sequence_number":3}
+
+event: response.reasoning_summary_text.delta
+data: {"type":"response.reasoning_summary_text.delta","item_id":"rs_1","output_index":0,"summary_index":0,"delta":"The user wants a listing.","sequence_number":4}
+
+event: response.reasoning_summary_part.added
+data: {"type":"response.reasoning_summary_part.added","item_id":"rs_1","output_index":0,"summary_index":1,"part":{"type":"summary_text","text":""},"sequence_number":5}
+
+event: response.reasoning_summary_text.delta
+data: {"type":"response.reasoning_summary_text.delta","item_id":"rs_1","output_index":0,"summary_index":1,"delta":"**Checking** It is safe.","sequence_number":6}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","output_index":0,"item":{"id":"rs_1","type":"reasoning","summary":[{"type":"summary_text","text":"**Listing files** The user wants a listing."},{"type":"summary_text","text":"**Checking** It is safe."}]},"sequence_number":7}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":1,"item":{"id":"msg_1","type":"message","status":"in_progress","role":"assistant","content":[]},"sequence_number":8}
+
+event: response.content_part.added
+data: {"type":"response.content_part.added","item_id":"msg_1","output_index":1,"content_index":0,"part":{"type":"output_text","text":"","annotations":[]},"sequence_number":9}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","item_id":"msg_1","output_index":1,"content_index":0,"delta":"Running ","logprobs":[],"sequence_number":10}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","item_id":"msg_1","output_index":1,"content_index":0,"delta":"it now.","logprobs":[],"sequence_number":11}
+
+event: response.output_text.done
+data: {"type":"response.output_text.done","item_id":"msg_1","output_index":1,"content_index":0,"text":"Running it now.","sequence_number":12}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":2,"item":{"id":"fc_1","type":"function_call","status":"in_progress","arguments":"","call_id":"call_1","name":"shell"},"sequence_number":13}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"fc_1","output_index":2,"delta":"{\"command\":","sequence_number":14}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"fc_1","output_index":2,"delta":"[\"ls\",\"-la\"]}","sequence_number":15}
+
+event: response.function_call_arguments.done
+data: {"type":"response.function_call_arguments.done","item_id":"fc_1","output_index":2,"arguments":"{\"command\":[\"ls\",\"-la\"]}","sequence_number":16}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","output_index":2,"item":{"id":"fc_1","type":"function_call","status":"completed","arguments":"{\"command\":[\"ls\",\"-la\"]}","call_id":"call_1","name":"shell"},"sequence_number":17}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":3,"item":{"id":"sh_1","type":"shell_call","status":"in_progress","call_id":"call_2"},"sequence_number":18}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","output_index":3,"item":{"id":"sh_1","type":"shell_call","status":"completed","call_id":"call_2","action":{"commands":["git status"],"timeout_ms":10000}},"sequence_number":19}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"resp_synthetic","object":"response","status":"completed","model":"synthetic-model","usage":{"input_tokens":20,"output_tokens":30,"total_tokens":50}},"sequence_number":20}
+

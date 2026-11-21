@@ -1,0 +1,43 @@
+[package]
+name = "traces"
+version = "0.1.0"
+edition = "2024"
+description = "Lightweight local HTTPS MITM proxy to generate local LLM traces and streams them to S3-compatible storage"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/saefstroem/traces"
+homepage = "https://github.com/saefstroem/traces"
+keywords = ["llm", "proxy", "mitm", "s3", "tracing"]
+categories = ["command-line-utilities", "development-tools::debugging", "network-programming"]
+include = [
+    "Cargo.toml",
+    "LICENSE",
+    "README.md",
+    "config.json",
+    "hosts",
+    "traces.plist",
+    "traces.service",
+    "src/**",
+    "fixtures/**",
+]
+
+[dependencies]
+aws-sdk-s3 = { version = "=1.161.0", default-features = false, features = ["default-https-client", "rt-tokio"] }
+bytes = "=1.12.2"
+hickory-resolver = "=0.26.3"
+http-body-util = "=0.1.5"
+hyper = { version = "=1.12.0", features = ["client", "http1", "http2", "server"] }
+hyper-util = { version = "=0.1.21", features = ["tokio"] }
+rcgen = { version = "=0.14.10", default-features = false, features = ["aws_lc_rs", "pem", "x509-parser"] }
+rustls = "=0.23.46"
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+thiserror = "=2.0.21"
+tokio = { version = "=1.54.1", features = ["io-util", "macros", "net", "rt-multi-thread", "signal", "sync", "time"] }
+tokio-rustls = "=0.26.6"
+tracing = "=0.1.44"
+tracing-subscriber = { version = "=0.3.23", features = ["env-filter"] }
+webpki-roots = "=1.0.12"
+
+[dev-dependencies]
+tempfile = "=3.27.0"

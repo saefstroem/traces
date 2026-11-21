@@ -1,0 +1,267 @@
+{
+  "listen": "127.0.0.1:7646",
+  "hosts_listen": "0.0.0.0:443",
+  "ca_dir": "~/.traces",
+  "routes": [
+    {
+      "path_suffix": "/v1/messages",
+      "provider": "anthropic"
+    },
+    {
+      "path_suffix": ":streamRawPredict",
+      "provider": "anthropic"
+    },
+    {
+      "path_suffix": "/chat/completions",
+      "provider": "openai_chat"
+    },
+    {
+      "path_suffix": "/responses",
+      "provider": "openai_responses"
+    },
+    {
+      "path_suffix": "/v1/agent",
+      "provider": "openai_responses"
+    },
+    {
+      "path_suffix": ":streamGenerateContent",
+      "provider": "gemini"
+    },
+    {
+      "path_suffix": "/interactions",
+      "provider": "gemini_interactions"
+    },
+    {
+      "path_suffix": "/api/chat",
+      "provider": "ollama"
+    },
+    {
+      "path_suffix": "/api/generate",
+      "provider": "ollama"
+    }
+  ],
+  "prefix": {
+    "headers": [
+      "x-claude-code-agent-id",
+      "x-claude-code-session-id",
+      "thread-id",
+      "session-id"
+    ],
+    "body": [
+      "/request/session_id",
+      "/request/sessionId",
+      "/sessionId"
+    ],
+    "skip": [
+      [
+        "x-claude-code-request-class",
+        "auxiliary"
+      ]
+    ]
+  },
+  "system": {
+    "macos": {
+      "hosts_file": "/etc/hosts",
+      "refresh": [
+        [
+          "dscacheutil",
+          "-flushcache"
+        ],
+        [
+          "killall",
+          "-HUP",
+          "mDNSResponder"
+        ]
+      ],
+      "binary": "/usr/local/bin/traces",
+      "service": {
+        "file": "/Library/LaunchDaemons/local.traces.plist",
+        "after_install": [],
+        "start": [
+          [
+            "launchctl",
+            "bootstrap",
+            "system",
+            "/Library/LaunchDaemons/local.traces.plist"
+          ]
+        ],
+        "before_remove": [
+          [
+            "launchctl",
+            "bootout",
+            "system/local.traces"
+          ]
+        ],
+        "after_remove": []
+      },
+      "trust": [
+        {
+          "present": "/Library/Keychains/System.keychain",
+          "check": [
+            "security",
+            "verify-cert",
+            "-c",
+            "{ca}"
+          ],
+          "install": [
+            [
+              "security",
+              "add-trusted-cert",
+              "-d",
+              "-r",
+              "trustRoot",
+              "-k",
+              "/Library/Keychains/System.keychain",
+              "{ca}"
+            ]
+          ],
+          "remove": [
+            [
+              "security",
+              "remove-trusted-cert",
+              "-d",
+              "{ca}"
+            ],
+            [
+              "security",
+              "delete-certificate",
+              "-c",
+              "traces-ca",
+              "/Library/Keychains/System.keychain"
+            ]
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "hosts_file": "/etc/hosts",
+      "refresh": [],
+      "binary": "/usr/local/bin/traces",
+      "service": {
+        "file": "/etc/systemd/system/traces.service",
+        "after_install": [
+          [
+            "systemctl",
+            "daemon-reload"
+          ],
+          [
+            "systemctl",
+            "enable",
+            "traces"
+          ]
+        ],
+        "start": [
+          [
+            "systemctl",
+            "start",
+            "traces"
+          ]
+        ],
+        "before_remove": [
+          [
+            "systemctl",
+            "disable",
+            "--now",
+            "traces"
+          ]
+        ],
+        "after_remove": [
+          [
+            "systemctl",
+            "daemon-reload"
+          ]
+        ]
+      },
+      "trust": [
+        {
+          "present": "/usr/local/share/ca-certificates",
+          "check": [
+            "cmp",
+            "-s",
+            "{ca}",
+            "/usr/local/share/ca-certificates/traces.crt"
+          ],
+          "install": [
+            [
+              "cp",
+              "{ca}",
+              "/usr/local/share/ca-certificates/traces.crt"
+            ],
+            [
+              "update-ca-certificates"
+            ]
+          ],
+          "remove": [
+            [
+              "rm",
+              "-f",
+              "/usr/local/share/ca-certificates/traces.crt"
+            ],
+            [
+              "update-ca-certificates",
+              "--fresh"
+            ]
+          ]
+        },
+        {
+          "present": "/etc/pki/ca-trust/source/anchors",
+          "check": [
+            "cmp",
+            "-s",
+            "{ca}",
+            "/etc/pki/ca-trust/source/anchors/traces.crt"
+          ],
+          "install": [
+            [
+              "cp",
+              "{ca}",
+              "/etc/pki/ca-trust/source/anchors/traces.crt"
+            ],
+            [
+              "update-ca-trust"
+            ]
+          ],
+          "remove": [
+            [
+              "rm",
+              "-f",
+              "/etc/pki/ca-trust/source/anchors/traces.crt"
+            ],
+            [
+              "update-ca-trust"
+            ]
+          ]
+        },
+        {
+          "present": "/etc/ca-certificates/trust-source/anchors",
+          "check": [
+            "cmp",
+            "-s",
+            "{ca}",
+            "/etc/ca-certificates/trust-source/anchors/traces.crt"
+          ],
+          "install": [
+            [
+              "cp",
+              "{ca}",
+              "/etc/ca-certificates/trust-source/anchors/traces.crt"
+            ],
+            [
+              "update-ca-trust"
+            ]
+          ],
+          "remove": [
+            [
+              "rm",
+              "-f",
+              "/etc/ca-certificates/trust-source/anchors/traces.crt"
+            ],
+            [
+              "update-ca-trust"
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

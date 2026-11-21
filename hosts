@@ -1,0 +1,35 @@
+# traces start
+127.0.0.1 api.anthropic.com
+127.0.0.1 api.openai.com
+127.0.0.1 chatgpt.com
+127.0.0.1 generativelanguage.googleapis.com
+127.0.0.1 cloudcode-pa.googleapis.com
+127.0.0.1 daily-cloudcode-pa.googleapis.com
+127.0.0.1 daily-cloudcode-pa.sandbox.googleapis.com
+127.0.0.1 businessaicode.googleapis.com
+127.0.0.1 aiplatform.googleapis.com
+127.0.0.1 claude.googleapis.com
+127.0.0.1 api.githubcopilot.com
+127.0.0.1 api.x.ai
+127.0.0.1 api.mistral.ai
+127.0.0.1 codestral.mistral.ai
+127.0.0.1 api.deepseek.com
+127.0.0.1 openrouter.ai
+127.0.0.1 api.groq.com
+127.0.0.1 api.together.ai
+127.0.0.1 api.fireworks.ai
+127.0.0.1 api.cerebras.ai
+127.0.0.1 api.perplexity.ai
+127.0.0.1 api.moonshot.ai
+127.0.0.1 api.z.ai
+127.0.0.1 open.bigmodel.cn
+127.0.0.1 api.minimax.io
+127.0.0.1 dashscope.aliyuncs.com
+127.0.0.1 dashscope-intl.aliyuncs.com
+127.0.0.1 router.huggingface.co
+127.0.0.1 integrate.api.nvidia.com
+127.0.0.1 api.meta.ai
+127.0.0.1 api.cohere.ai
+127.0.0.1 api.xiaomimimo.com
+127.0.0.1 ollama.com
+# traces end

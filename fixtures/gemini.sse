@@ -1,0 +1,8 @@
+data: {"candidates": [{"content": {"parts": [{"text": "**Planning** ","thought": true}],"role": "model"},"index": 0}],"modelVersion": "synthetic-model","responseId": "synthetic"}
+
+data: {"candidates": [{"content": {"parts": [{"text": "I need the file list.","thought": true}],"role": "model"},"index": 0}],"modelVersion": "synthetic-model","responseId": "synthetic"}
+
+data: {"candidates": [{"content": {"parts": [{"text": "Listing the files."}],"role": "model"},"index": 0}],"modelVersion": "synthetic-model","responseId": "synthetic"}
+
+data: {"candidates": [{"content": {"parts": [{"functionCall": {"name": "run_shell_command","args": {"command": "ls -la"}},"thoughtSignature": "CiQBsynthetic"}],"role": "model"},"finishReason": "STOP","index": 0}],"usageMetadata": {"promptTokenCount": 10,"candidatesTokenCount": 8,"totalTokenCount": 18},"modelVersion": "synthetic-model","responseId": "synthetic"}
+

@@ -1,0 +1,48 @@
+event: interaction.created
+data: {"interaction": {"id": "int_synthetic", "status": "in_progress", "model": "synthetic-model"}, "event_type": "interaction.created"}
+
+event: step.start
+data: {"index": 0, "step": {"type": "thought"}, "event_type": "step.start"}
+
+event: step.delta
+data: {"index": 0, "delta": {"type": "thought_summary", "content": {"type": "text", "text": "**Weather** "}}, "event_type": "step.delta"}
+
+event: step.delta
+data: {"index": 0, "delta": {"type": "thought_summary", "content": {"type": "text", "text": "The user wants the forecast."}}, "event_type": "step.delta"}
+
+event: step.delta
+data: {"index": 0, "delta": {"type": "thought_signature", "signature": "c3ludGhldGlj"}, "event_type": "step.delta"}
+
+event: step.stop
+data: {"index": 0, "event_type": "step.stop"}
+
+event: step.start
+data: {"index": 1, "step": {"type": "model_output", "content": [{"type": "text", "text": "I will "}]}, "event_type": "step.start"}
+
+event: step.delta
+data: {"index": 1, "delta": {"type": "text", "text": "check the weather."}, "event_type": "step.delta"}
+
+event: step.stop
+data: {"index": 1, "event_type": "step.stop"}
+
+event: step.start
+data: {"index": 2, "step": {"type": "function_call", "id": "un6k8t18", "name": "get_weather", "arguments": {}}, "event_type": "step.start"}
+
+event: step.delta
+data: {"index": 2, "delta": {"type": "arguments_delta", "arguments": "{\"location\": \"San Francisco, CA\"}"}, "event_type": "step.delta"}
+
+event: step.stop
+data: {"index": 2, "event_type": "step.stop"}
+
+event: step.start
+data: {"index": 3, "step": {"type": "google_search_call", "id": "s1", "arguments": {"queries": ["weather San Francisco"]}}, "event_type": "step.start"}
+
+event: step.stop
+data: {"index": 3, "event_type": "step.stop"}
+
+event: interaction.completed
+data: {"interaction": {"id": "int_synthetic", "status": "requires_action", "usage": {"total_tokens": 42}}, "event_type": "interaction.completed"}
+
+event: done
+data: [DONE]
+
