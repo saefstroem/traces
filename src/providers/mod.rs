@@ -27,7 +27,7 @@ pub use trace::{Exchange, Trace};
 pub trait Provider: Sync {
     fn name(&self) -> &'static str;
     /// Extracts user prompt from a request, that may or may not return the prompt
-    fn prompt<'a>(&self, request: &'a Value) -> Option<&'a Value>; 
+    fn prompt<'a>(&self, request: &'a Value) -> Option<&'a Value>;
     fn read(&self, event: &Value, exchange: &mut Exchange);
 }
 

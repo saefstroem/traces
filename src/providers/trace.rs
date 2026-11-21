@@ -41,7 +41,7 @@ impl Exchange {
     /// Extends the trace of the specified part with additional text, if the part exists and is extendable.
     pub fn extend(&mut self, part: usize, more: &str) {
         let at = self.parts.get(&part).copied(); // Get the index of the part in the trace list, if it exists.
-        
+
         // If the part exists and is one of the extendable trace types, append the additional text.
         if let Some(Trace::Thinking(text) | Trace::Output(text) | Trace::Tool { input: text, .. }) =
             at.and_then(|at| self.traces.get_mut(at))

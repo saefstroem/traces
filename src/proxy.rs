@@ -114,7 +114,7 @@ impl Proxy {
         self.accept_and_serve(start, host, port, server_name).await
     }
 
-    /// Accepts the TLS handshake and serves the connection, 
+    /// Accepts the TLS handshake and serves the connection,
     /// determining the appropriate upstream protocol (HTTP/1.1 or HTTP/2).
     async fn accept_and_serve(
         self: Arc<Self>,
@@ -125,7 +125,7 @@ impl Proxy {
     ) -> Result<()> {
         // Determine if the client wants to use HTTP/2 based on the ALPN protocols advertised in the ClientHello.
         let wants_h2 = start.client_hello().alpn().is_some_and(|mut protocols| protocols.any(|proto| proto == b"h2"));
-        
+
         // Establish the upstream connection based on the desired protocol (HTTP/2 or HTTP/1.1).
         let (alpn, upstream) = if wants_h2 {
             // Connect to the upstream server over TCP.
@@ -174,13 +174,9 @@ impl Proxy {
                             // Parse the collected bytes as JSON for further processing.
                             let parsed = from_slice::<Value>(&bytes).unwrap_or_default();
                             // Generate a conversation key for tracing based on the provider, request path, headers, and parsed body.
-                            let prefix = proxy.config.prefix.key(
-                                provider.name(),
-                                parts.uri.path(),
-                                &parts.headers,
-                                &parsed,
-                            );
-                            // Capture the LLM trace 
+                            let prefix =
+                                proxy.config.prefix.key(provider.name(), parts.uri.path(), &parts.headers, &parsed);
+                            // Capture the LLM trace
                             let capture = Capture::request(provider, &mut parts, &parsed);
                             // Reconstruct the request body for forwarding to the upstream server.
                             let body = Full::new(bytes).map_err(|never| match never {}).boxed();

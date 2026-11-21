@@ -28,7 +28,7 @@ impl Provider for Gemini {
         let candidates = event.get("candidates").and_then(Value::as_array).into_iter().flatten();
         // extract the parts array from each candidate's content, if present
         let parts = candidates.filter_map(|candidate| candidate.pointer("/content/parts")?.as_array()).flatten();
-        
+
         // iterate over each part and handle function calls, text, and thoughts accordingly
         for part in parts {
             if let Some(call) = part.get("functionCall") {

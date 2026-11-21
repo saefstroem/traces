@@ -16,7 +16,7 @@ pub struct Capture {
 }
 
 impl Capture {
-    /// Creates a new capture for the given provider and request, 
+    /// Creates a new capture for the given provider and request,
     /// removing the accept-encoding header and recording the prompt if available.
     pub fn request(provider: &'static dyn Provider, parts: &mut Parts, request: &Value) -> Self {
         parts.headers.remove(ACCEPT_ENCODING);

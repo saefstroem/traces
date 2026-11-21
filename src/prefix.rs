@@ -3,7 +3,7 @@ use serde::Deserialize;
 use serde_json::Value;
 
 #[derive(Deserialize)]
-/// Represents configuration for where a conversation or session IDs can be found. I.e. 
+/// Represents configuration for where a conversation or session IDs can be found. I.e.
 /// in which part of the JSON body or in which header and which headers to skip if the request has those headers
 pub struct Prefix {
     headers: Vec<String>,
@@ -15,7 +15,7 @@ impl Prefix {
     pub fn key(&self, provider: &str, path: &str, headers: &HeaderMap, request: &Value) -> Option<String> {
         // Check if any of the headers match the skip list and return None if so.
         let header = |name: &str| headers.get(name).and_then(|value| value.to_str().ok());
-        
+
         // Check if the request should be skipped based on the headers and skip list.
         if self.skip.iter().any(|(name, value)| header(name) == Some(value.as_str())) {
             return None;
@@ -36,10 +36,10 @@ impl Prefix {
         // Extract the conversation ID from the request body.
         // by going over the pointers that we specified in the conversation configuration
         let in_body = || self.body.iter().find_map(|pointer| request.pointer(pointer)?.as_str());
-        
+
         // Extract the conversation ID from the headers or the body, falling back to "unknown" if not found.
         let id = self.headers.iter().find_map(|name| header(name)).or_else(in_body).unwrap_or("unknown");
-        
+
         // Sanitize the provider, model, and conversation ID to ensure they only contain safe characters.
         let sanitize = |text: &str| -> String {
             text.chars().map(|c| if c.is_ascii_alphanumeric() || "-_.".contains(c) { c } else { '_' }).collect()

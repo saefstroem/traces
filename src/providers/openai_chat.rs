@@ -27,12 +27,12 @@ impl Provider for OpenAiChat {
 
         // Extract choices from the event and process each delta for reasoning, output, and tool calls
         let choices = event.get("choices").and_then(Value::as_array).into_iter().flatten();
-        
+
         // Iterate over each delta in the choices to extract reasoning, output, and tool calls
         for delta in choices.filter_map(|choice| choice.get("delta")) {
             // Extract text and reasoning details from the delta
             let text = |key: &str| delta.get(key).and_then(Value::as_str).unwrap_or_default().to_string();
-            
+
             // Extract reasoning details from the delta
             let details = delta.get("reasoning_details");
 
@@ -44,8 +44,8 @@ impl Provider for OpenAiChat {
                 reasoning.unwrap_or_else(|| joined(details, "text") + &joined(details, "summary")),
             ));
             // Append refusal and content as output trace if they are strings
-            exchange.append(Trace::Output(text("refusal") + &text("content"))); 
-            
+            exchange.append(Trace::Output(text("refusal") + &text("content")));
+
             // If content is an array then we go over the chunk
             for chunk in delta.get("content").and_then(Value::as_array).into_iter().flatten() {
                 // Extract thinking and text from each chunk and append them to the exchange as traces
@@ -60,7 +60,7 @@ impl Provider for OpenAiChat {
                 let index = call.get("index").and_then(Value::as_u64).unwrap_or_default() as usize;
                 // Extract the function name and arguments for the tool call
                 let function = |key: &str| call.get("function")?.get(key)?.as_str();
-                
+
                 // Extract the name of the tool from the function details
                 let name = function("name").unwrap_or_default().to_string();
                 // Start the tool call trace with the extracted name and an empty input

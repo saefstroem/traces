@@ -64,7 +64,8 @@ pub fn manage(command: &str) -> Result<()> {
     let ca = Ca::load_or_create(&Config::load()?.ca_dir()?)?.cert_path;
     let mut arguments: Vec<OsString> = vec![PRIVILEGED.into(), command.into(), ca.into()];
     // If the command is "install", gather additional environment variables for the privileged command.
-    if command == "install" { // If the command is "install", gather additional environment variables.
+    if command == "install" {
+        // If the command is "install", gather additional environment variables.
         Settings::from_env_file()?;
         // Load the environment variables from the .env file.
         let variable = |name: &'static str| env::var_os(name).ok_or(Error::MissingEnv(name.into()));
@@ -95,7 +96,7 @@ pub fn manage(command: &str) -> Result<()> {
 /// Execute the privileged command with the provided arguments.
 /// This function handles the installation, starting, and uninstallation of the traces service.
 pub fn privileged() -> Result<()> {
-    // Collect the arguments passed to the privileged command, 
+    // Collect the arguments passed to the privileged command,
     // Skipping the first two (the executable and the command itself).
     let arguments: Vec<String> = env::args().skip(2).collect();
     // Load the system-specific configuration for the current platform.
@@ -170,10 +171,10 @@ fn uninstall(system: &System, ca: &Path) -> Result<()> {
     };
     // Helper function to update the hosts file by removing the block.
     let hosts = || read(&system.hosts_file).and_then(|hosts| write(&system.hosts_file, &without_block(&hosts)));
-    
+
     // Locate the trust store if it exists.
     let store = system.trust.iter().find(|store| store.present.exists());
-    
+
     // Execute the uninstallation steps in order.
     let steps = [
         // Execute any pre-removal steps for the service.
