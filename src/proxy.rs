@@ -1,12 +1,13 @@
 use std::sync::Arc;
 
 use bytes::Bytes;
+use flate2::read::{GzDecoder, ZlibDecoder};
 use http_body_util::combinators::BoxBody;
 use http_body_util::{BodyExt, Empty, Full};
 use hyper::body::Incoming;
 use hyper::client::conn::http1::handshake as h1_handshake;
 use hyper::client::conn::http2::{Builder as H2ClientBuilder, SendRequest as H2Sender};
-use hyper::header::UPGRADE;
+use hyper::header::{CONTENT_ENCODING, UPGRADE};
 use hyper::server::conn::http1::Builder as H1ServerBuilder;
 use hyper::server::conn::http2::Builder as H2ServerBuilder;
 use hyper::service::service_fn;
@@ -15,7 +16,7 @@ use hyper_util::rt::{TokioExecutor, TokioIo};
 use rustls::ClientConfig;
 use rustls::pki_types::ServerName;
 use rustls::server::Acceptor;
-use serde_json::{Value, from_slice};
+use serde_json::{Value, from_reader, from_slice};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 use tokio::spawn;
@@ -172,7 +173,18 @@ impl Proxy {
                             // Collect the request body into bytes for parsing.
                             let bytes = body.collect().await?.to_bytes();
                             // Parse the collected bytes as JSON for further processing.
-                            let parsed = from_slice::<Value>(&bytes).unwrap_or_default();
+                            let encoding = parts.headers.get(CONTENT_ENCODING).and_then(|value| value.to_str().ok());
+                            let parsed = match encoding.map(str::trim) {
+                                Some(kind)
+                                    if kind.eq_ignore_ascii_case("gzip") || kind.eq_ignore_ascii_case("x-gzip") =>
+                                {
+                                    from_reader(GzDecoder::new(bytes.as_ref())).unwrap_or_default()
+                                }
+                                Some(kind) if kind.eq_ignore_ascii_case("deflate") => {
+                                    from_reader(ZlibDecoder::new(bytes.as_ref())).unwrap_or_default()
+                                }
+                                _ => from_slice::<Value>(&bytes).unwrap_or_default(),
+                            };
                             // Generate a conversation key for tracing based on the provider, request path, headers, and parsed body.
                             let prefix =
                                 proxy.config.prefix.key(provider.name(), parts.uri.path(), &parts.headers, &parsed);
@@ -281,12 +293,15 @@ mod tests {
     use core::pin::Pin;
     use core::result;
     use core::task::{Context, Poll};
+    use std::io::Write;
     use std::path::Path;
     use std::sync::Arc;
     use std::sync::atomic::{AtomicUsize, Ordering};
     use std::time::Duration;
 
     use bytes::Bytes;
+    use flate2::Compression;
+    use flate2::write::GzEncoder;
     use http_body_util::{BodyExt, Full};
     use hyper::body::{Body, Frame, Incoming};
     use hyper::client::conn::http1::{SendRequest as H1Sender, handshake as h1_handshake};
@@ -439,6 +454,28 @@ mod tests {
         let (segment, traces) = stored(&proxy).await;
         assert_eq!(segment.prefix, "anthropic/unknown/session-2");
         assert_eq!(traces[0], json!({"input": {"role": "user", "content": "via hosts"}}));
+    }
+
+    #[tokio::test]
+    async fn decompresses_gzip_request_bodies_for_prefix_and_input_capture() {
+        let dir = tempdir().unwrap();
+        let (proxy, h1, _) = proxy(dir.path());
+        let port = fake_h1_provider(&proxy).await;
+        let mut sender = h1_client(&proxy, &h1, port).await;
+        let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(br#"{"model":"claude-fable-5-1","messages":[{"role":"user","content":"compressed"}]}"#).unwrap();
+        let gzipped = encoder.finish().unwrap();
+        let request = Request::post("/v1/messages?beta=true")
+            .header("host", format!("localhost:{port}"))
+            .header("content-encoding", "gzip")
+            .header("x-claude-code-session-id", "session-gz")
+            .body(Full::new(Bytes::from(gzipped)))
+            .unwrap();
+        let response = sender.send_request(request).await.unwrap();
+        assert_eq!(response.into_body().collect().await.unwrap().to_bytes(), ANTHROPIC_STREAM);
+        let (segment, traces) = stored(&proxy).await;
+        assert_eq!(segment.prefix, "anthropic/claude-fable-5-1/session-gz");
+        assert_eq!(traces[0], json!({"input": {"role": "user", "content": "compressed"}}));
     }
 
     #[tokio::test]

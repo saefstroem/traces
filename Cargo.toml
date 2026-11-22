@@ -24,6 +24,7 @@ include = [
 [dependencies]
 aws-sdk-s3 = { version = "=1.161.0", default-features = false, features = ["default-https-client", "rt-tokio"] }
 bytes = "=1.12.2"
+flate2 = "=1.1.11"
 hickory-resolver = "=0.26.3"
 http-body-util = "=0.1.5"
 hyper = { version = "=1.12.0", features = ["client", "http1", "http2", "server"] }
