@@ -48,6 +48,7 @@
       "session-id"
     ],
     "body": [
+      "/request/labels/trajectory_id",
       "/request/session_id",
       "/request/sessionId",
       "/sessionId"

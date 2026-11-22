@@ -35,10 +35,16 @@ impl Prefix {
 
         // Extract the conversation ID from the request body.
         // by going over the pointers that we specified in the conversation configuration
-        let in_body = || self.body.iter().find_map(|pointer| request.pointer(pointer)?.as_str());
+        let in_body =
+            || self.body.iter().find_map(|pointer| request.pointer(pointer)?.as_str().filter(|id| !id.is_empty()));
 
         // Extract the conversation ID from the headers or the body, falling back to "unknown" if not found.
-        let id = self.headers.iter().find_map(|name| header(name)).or_else(in_body).unwrap_or("unknown");
+        let id = self
+            .headers
+            .iter()
+            .find_map(|name| header(name).filter(|id| !id.is_empty()))
+            .or_else(in_body)
+            .unwrap_or("unknown");
 
         // Sanitize the provider, model, and conversation ID to ensure they only contain safe characters.
         let sanitize = |text: &str| -> String {
@@ -90,9 +96,19 @@ mod tests {
         assert_eq!(
             key(
                 "gemini",
+                "/v1internal:streamGenerateContent",
+                &[],
+                json!({"model": "gemini-4-neon", "request": {"sessionId": "-123", "labels": {"trajectory_id": "traj-9"}}})
+            )
+            .as_deref(),
+            Some("gemini/gemini-4-neon/traj-9")
+        );
+        assert_eq!(
+            key(
+                "gemini",
                 "/v1beta/models/gemini-2.5-flash:streamGenerateContent",
                 &[],
-                json!({"request": {"sessionId": "ag-4"}})
+                json!({"request": {"sessionId": "ag-4", "labels": {"trajectory_id": ""}}})
             )
             .as_deref(),
             Some("gemini/gemini-2.5-flash/ag-4")
